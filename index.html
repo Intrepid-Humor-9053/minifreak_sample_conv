@@ -25,7 +25,20 @@
       </div>
       <a id="download-link" style="display: none">Download File</a>
       <div id="error-dialog" class="error-dialog" style="display: none"></div>
+      <div style="display: flex; justify-content: center; width: 100%">
+        <div id="readme-markdown" class="readme-markdown"></div>
+      </div>
     </div>
     <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      // Dynamically fetch and render README.md as centered markdown
+      fetch("README.md")
+        .then((res) => res.text())
+        .then((md) => {
+          document.getElementById("readme-markdown").innerHTML =
+            marked.parse(md);
+        });
+    </script>
   </body>
 </html>

@@ -1,45 +1,45 @@
-# File Converter App
+# [Minifreak sample conversion](https://mtizim.github.io/minifreak_sample_conv/)
 
-This is a simple file converter application that allows users to drag and drop files and download them unchanged. The application is built using HTML, CSS, and JavaScript, and is designed to be hosted as a static single page on GitHub.
+## Attribution
+Thanks to
+[u/Intrepid-Humor-9053](https://www.reddit.com/user/Intrepid-Humor-9053) for the [original code](https://www.reddit.com/r/MiniFreak/comments/1l4vkww/bring_your_own_samples_to_minifreak_app_sample/) and instructions below.
 
-## Features
+Consider getting him a beer on [Gumroad](https://paulzett.gumroad.com/l/usersampleimporter)
 
-- Drag and drop functionality for file input.
-- Download the same file back without any modifications.
+### 🪄 Step-by-Step Workflow
 
-## Project Structure
+1. **Convert Your Files**
+   - Drag & drop your WAV, AIFF, or MP3 files into the app.
+   - Optionally trim and preview before converting.
+   - Files will be saved as `.raw12b` format.
 
-```
-file-converter-app
-├── src
-│   ├── index.html      # Main HTML page with drag-and-drop interface
-│   ├── style.css       # Styles for the application
-│   └── app.js          # JavaScript for handling drag-and-drop and file download
-├── package.json        # Configuration file for npm
-└── README.md           # Documentation for the project
-```
+2. **Copy to Factory Sample Folder**
+   - Place your converted files into this directory:
+     ```
+     /Library/Arturia/Samples/MiniFreak V/Factory/Samples/Factory
+     ```
+     > 📁 This is the (standard) Factory Sample folder used by MiniFreak V.
 
-## Getting Started
+3. **Sync to Hardware**
+   - Connect your MiniFreak to your computer via USB.
+   - Open the **MiniFreak standalone app, NOT PLUGIN**.
+   - A prompt will appear to **synchronize samples** — proceed with it.
+   - Your new samples will be transferred to the hardware.
 
-To get started with the application, follow these steps:
+4. **Play Your Samples**
+   - The new samples will now appear inside MiniFreak’s **Factory** list.
+   - You can use them in the **Sampler** or **Grain Engine**.
 
-1. Clone the repository to your local machine.
-   ```
-   git clone https://github.com/yourusername/file-converter-app.git
-   ```
+---
 
-2. Navigate to the project directory.
-   ```
-   cd file-converter-app
-   ```
+> ⚠️ **Backup First!**
+> Before adding or replacing samples, make sure to **backup your current MiniFreak state and sample library** — just in case.
 
-3. Open the `src/index.html` file in your web browser to view the application.
+> 🧪 **Test Gradually**
+> While this tool has worked reliably in our testing, it's always a good idea to:
+> - Add samples in **small batches**.
+> - Test syncing and playback between each batch.
 
-## Usage
+This is **not an official Arturia tool** — it's a personal project made out of passion (and a bit of frustration) with the lack of sample import in firmware 4.0 😉
 
-- Drag and drop a file into the designated area on the page.
-- The application will allow you to download the same file back without any changes.
-
-## License
-
-This project is licensed under the MIT License.
+Enjoy crafting your own sound universe!
