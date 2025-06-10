@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MiniFreak Sample Converter</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>MiniFreak Sample Converter</h1>
+      <div id="drop-area">
+        <p>Drop your sample here</p>
+        <input type="file" id="fileElem" accept="*/*" style="display: none" />
+      </div>
+      <div class="options">
+        <label>
+          <input type="checkbox" id="fade-checkbox" />
+          Apply fade
+        </label>
+        <label>
+          <input type="checkbox" id="normalize-checkbox" />
+          Apply normalize
+        </label>
+      </div>
+      <a id="download-link" style="display: none">Download File</a>
+      <div id="error-dialog" class="error-dialog" style="display: none"></div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
