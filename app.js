@@ -1,4 +1,10 @@
 const dropArea = document.getElementById('drop-area');
+let selectedStart = 0; // seconds
+let selectedEnd = 3;   // seconds
+let maxDuration = 3.0;
+let samplesForCanvas = [];
+let sampleRate = 48000;
+
 
 dropArea.addEventListener('dragover', (event) => {
     event.preventDefault();
