@@ -6,19 +6,23 @@ Thanks to
 
 Consider getting him a beer on [Gumroad](https://paulzett.gumroad.com/l/usersampleimporter)
 
+[Or me 😉](https://ko-fi.com/mtizim)
+
+
 ### 🪄 Step-by-Step Workflow
 
 1. **Convert Your Files**
    - Drag & drop your WAV, AIFF, or MP3 files into the app.
-   - Optionally trim and preview before converting.
+   - Optionally apply **fade** and/or **normalize** before converting.
    - Files will be saved as `.raw12b` format.
 
 2. **Copy to Factory Sample Folder**
-   - Place your converted files into this directory:
-     ```
-     /Library/Arturia/Samples/MiniFreak V/Factory/Samples/Factory
-     ```
-     > 📁 This is the (standard) Factory Sample folder used by MiniFreak V.
+   - Place your converted files into the appropriate directory for your operating system:
+     - **macOS:**
+       `/Library/Arturia/Samples/MiniFreak V/Factory/Samples/Factory`
+     - **Windows:**
+       `C:\ProgramData\Arturia\Samples\MiniFreak V\Factory\Samples\Factory`
+     > 📁 These are the standard Factory Sample folders used by MiniFreak V.
 
 3. **Sync to Hardware**
    - Connect your MiniFreak to your computer via USB.
@@ -40,6 +44,5 @@ Consider getting him a beer on [Gumroad](https://paulzett.gumroad.com/l/usersamp
 > - Add samples in **small batches**.
 > - Test syncing and playback between each batch.
 
-This is **not an official Arturia tool** — it's a personal project made out of passion (and a bit of frustration) with the lack of sample import in firmware 4.0 😉
-
+This is **not an official Arturia tool**
 Enjoy crafting your own sound universe!
