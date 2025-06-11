@@ -23,9 +23,10 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     min-height: 100vh;
-    display: flex;
+    /* display: flex; */
+    /* flex-direction: row; */
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .container {
@@ -36,11 +37,11 @@ body {
     background: var(--bg1);
     border-radius: 22px;
     box-shadow: 0 8px 36px rgba(40,40,40,0.22);
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     border: 1.5px solid var(--bg2);
+    text-align: center;
 }
 
 h1 {
