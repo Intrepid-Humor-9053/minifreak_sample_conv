@@ -9,10 +9,12 @@
   <body>
     <div class="container">
       <h1>MiniFreak Sample Converter</h1>
+
       <div id="drop-area">
         <p>Drop your sample here</p>
-        <input type="file" id="fileElem" accept="*/*" style="display: none" />
+        <input type="file" id="fileElem" accept="audio/*" style="display: none" />
       </div>
+
       <div class="options">
         <label>
           <input type="checkbox" id="fade-checkbox" />
@@ -48,14 +50,31 @@
           *Values other than 3 may not work on hardware!
         </div>
       </div>
-      <canvas id="waveform-canvas" width="800" height="200"
-      style="border:1px solid #ccc; margin-top:1rem; touch-action:none;">
-      </canvas>
+
+      <!-- Waveform Canvas -->
+      <canvas
+        id="waveform-canvas"
+        width="800"
+        height="200"
+        style="border: 1px solid #ccc; margin-top: 1rem; touch-action: none"
+      ></canvas>
+
+      <!-- Range sliders (optional if you want to show current selection) -->
+      <div style="margin-top: 10px;">
+        <label>Start: <span id="start-label">0.00</span>s</label>
+        <label style="margin-left: 20px;">End: <span id="end-label">3.00</span>s</label>
+      </div>
+
+      <!-- Download and error -->
       <a id="download-link" style="display: none">Download File</a>
       <div id="error-dialog" class="error-dialog" style="display: none"></div>
+
+      <!-- README Preview -->
       <div style="display: flex; justify-content: center; width: 100%">
         <div id="readme-markdown" class="readme-markdown"></div>
       </div>
+
+      <!-- Footer -->
       <div>
         <br />
         <br />
@@ -73,15 +92,16 @@
         ></script>
       </div>
     </div>
+
+    <!-- JS Scripts -->
     <script src="app.js"></script>
+    <script src="waveform-preview.js"></script> <!-- You will add this file -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-      // Dynamically fetch and render README.md as centered markdown
       fetch("README.md")
         .then((res) => res.text())
         .then((md) => {
-          document.getElementById("readme-markdown").innerHTML =
-            marked.parse(md);
+          document.getElementById("readme-markdown").innerHTML = marked.parse(md);
         });
     </script>
   </body>
