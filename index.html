@@ -68,6 +68,27 @@
         <label style="margin-left: 20px;">End: <span id="end-label">3.00</span>s</label>
       </div>
 
+      <div id="controls">
+        <label>Fade-in/out <input type="checkbox" id="fade-checkbox"></label>
+        <label>Normalize <input type="checkbox" id="normalize-checkbox"></label>
+        <label>
+          Max preview duration 
+          <input type="number" id="duration-seconds" value="3" step="0.1" min="0.1">
+          s
+        </label>
+        <div>
+          Selection: 
+          <span id="start-label">0.00</span>s – 
+          <span id="end-label">3.00</span>s
+          <button id="download-selection-btn" disabled>Download selection</button>
+        </div>
+      </div>
+      
+      <canvas id="waveform-canvas" width="800" height="200"></canvas>
+      <input type="file" id="fileElem" accept="audio/*" hidden>
+      <div id="drop-area">Drag &amp; drop audio here or click to browse</div>
+      <div id="error-dialog"></div
+
       <!-- Download and error -->
       <a id="download-link" style="display: none">Download File</a>
       <div id="error-dialog" class="error-dialog" style="display: none"></div>
