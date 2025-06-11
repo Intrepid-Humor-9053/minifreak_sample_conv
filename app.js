@@ -4,7 +4,7 @@
 const dropArea = document.getElementById('drop-area');
 let selectedStart     = 0;   // in seconds
 let selectedEnd       = 3.0; // in seconds
-const maxDuration     = 3.0; // maximum selectable duration
+let maxDuration = 3.0;
 let samplesForCanvas  = [];  // full waveform samples
 let sampleRate        = 48000;
 
@@ -65,6 +65,7 @@ async function processFileAndDownload(file, fade, normalize, durationSec) {
     const fullSamples = rendered.getChannelData(0);
     samplesForCanvas  = fullSamples.slice();
     sampleRate        = SAMPLE_RATE;
+    maxDuration = durationSec;
     drawWaveform(samplesForCanvas);
     updateSelectionLabels();
 
