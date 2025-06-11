@@ -10,11 +10,13 @@
     <div class="container">
       <h1>MiniFreak Sample Converter</h1>
 
+      <!-- Drop area + hidden file input -->
       <div id="drop-area">
-        <p>Drop your sample here</p>
-        <input type="file" id="fileElem" accept="audio/*" style="display: none" />
+        <p>Drag & drop audio here or click to browse</p>
+        <input type="file" id="fileElem" accept="audio/*" hidden />
       </div>
 
+      <!-- Options -->
       <div class="options">
         <label>
           <input type="checkbox" id="fade-checkbox" />
@@ -24,14 +26,14 @@
           <input type="checkbox" id="normalize-checkbox" />
           Apply normalize
         </label>
-
         <label style="display: flex; align-items: center; gap: 6px">
-          <span style="color: var(--red); font-size: 0.98em">limit to </span>
+          <span style="color: var(--red); font-size: 0.98em">limit to</span>
           <input
             type="number"
             id="duration-seconds"
-            min="3"
+            min="0.1"
             max="600"
+            step="0.1"
             value="3"
             style="
               width: 48px;
@@ -50,83 +52,63 @@
           *Values other than 3 may not work on hardware!
         </div>
       </div>
-      <!-- Waveform Preview and Range Labels -->
+
+      <!-- Waveform preview + selection labels -->
       <div style="margin-top: 1rem;">
         <div style="margin-bottom: 5px;">
           Start: <span id="start-label">0.00</span>s |
           End: <span id="end-label">3.00</span>s
         </div>
-        <canvas id="waveform-canvas" width="800" height="200"
-                style="border: 1px solid #ccc; touch-action: none; cursor: crosshair;">
-        </canvas>
+        <canvas
+          id="waveform-canvas"
+          width="800"
+          height="200"
+          style="border: 1px solid #ccc; touch-action: none; cursor: crosshair;"
+        ></canvas>
       </div>
 
-
-      <!-- Range sliders (optional if you want to show current selection) -->
-      <div style="margin-top: 10px;">
-        <label>Start: <span id="start-label">0.00</span>s</label>
-        <label style="margin-left: 20px;">End: <span id="end-label">3.00</span>s</label>
+      <!-- Download button -->
+      <div id="controls" style="margin-top: 1rem;">
+        <button id="download-selection-btn" disabled>
+          Download Selection
+        </button>
       </div>
 
-      <div id="controls">
-        <label>Fade-in/out <input type="checkbox" id="fade-checkbox"></label>
-        <label>Normalize <input type="checkbox" id="normalize-checkbox"></label>
-        <label>
-          Max preview duration 
-          <input type="number" id="duration-seconds" value="3" step="0.1" min="0.1">
-          s
-        </label>
-        <div>
-          Selection: 
-          <span id="start-label">0.00</span>s – 
-          <span id="end-label">3.00</span>s
-          <button id="download-selection-btn" disabled>Download selection</button>
-        </div>
-      </div>
-      
-      <canvas id="waveform-canvas" width="800" height="200"></canvas>
-      <input type="file" id="fileElem" accept="audio/*" hidden>
-      <div id="drop-area">Drag &amp; drop audio here or click to browse</div>
-      <div id="error-dialog"></div
-
-      <!-- Download and error -->
-      <a id="download-link" style="display: none">Download File</a>
-      <div id="error-dialog" class="error-dialog" style="display: none"></div>
+      <!-- Error dialog -->
+      <div id="error-dialog" class="error-dialog" style="display: none;"></div>
 
       <!-- README Preview -->
-      <div style="display: flex; justify-content: center; width: 100%">
+      <div style="display: flex; justify-content: center; width: 100%; margin-top: 2rem;">
         <div id="readme-markdown" class="readme-markdown"></div>
       </div>
 
-      <!-- Footer -->
-      <div>
-        <br />
-        <br />
-        <div style="text-align: center; color: var(--fg2); margin-bottom: 6px">
-          (I just want to see how many people this helped)
-        </div>
+      <!-- Footer / Counter -->
+      <footer style="text-align: center; margin-top: 2rem; color: var(--fg2);">
+        <div>(I just want to see how many people this helped)</div>
         <a href="https://www.free-counters.org/">powered by Free-Counters</a>
         <script
-          type="text/javascript"
           src="https://www.freevisitorcounters.com/auth.php?id=581f12878932542e8293f716501a29d12b31e728"
+          async
         ></script>
         <script
-          type="text/javascript"
           src="https://www.freevisitorcounters.com/en/home/counter/1350426/t/2"
+          async
         ></script>
-      </div>
+      </footer>
     </div>
 
     <!-- JS Scripts -->
-    <script src="app.js"></script>
-    <script src="waveform-preview.js"></script> <!-- You will add this file -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="app.js" defer></script>
+    <script src="waveform-preview.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
     <script>
-      fetch("README.md")
-        .then((res) => res.text())
-        .then((md) => {
-          document.getElementById("readme-markdown").innerHTML = marked.parse(md);
-        });
+      document.addEventListener('DOMContentLoaded', () => {
+        fetch("README.md")
+          .then(res => res.text())
+          .then(md => {
+            document.getElementById("readme-markdown").innerHTML = marked.parse(md);
+          });
+      });
     </script>
   </body>
 </html>
