@@ -66,6 +66,12 @@ async function processFileAndDownload(file, fade, normalize, durationSec) {
     src.start(0);
     const rendered = await offline.startRendering();
     let samples = rendered.getChannelData(0);
+      // Store for visualization
+    samplesForCanvas = samples.slice();
+    sampleRate = SAMPLE_RATE;
+    drawWaveform(samplesForCanvas);
+    updateSelectionLabels();
+
 
     /* ---------- 3. Optional fade-in/out ---------- */
     if (fade) {
@@ -128,4 +134,51 @@ function showErrorDialog(message) {
     dialog.classList.remove('visible');
     setTimeout(() => { dialog.style.display = 'none'; }, 200);
   }, 5000);
+    function drawWaveform(samples) {
+  const canvas = document.getElementById('waveform-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.strokeStyle = '#ff9933';
+  ctx.beginPath();
+
+  const step = Math.floor(samples.length / width);
+  for (let i = 0; i < width; i++) {
+    const min = samples[i * step] || 0;
+    const y = (1 - min) * height / 2;
+    if (i === 0) ctx.moveTo(i, y);
+    else ctx.lineTo(i, y);
+  }
+  ctx.stroke();
+
+  // Draw selection lines
+  const startX = selectedStart / maxDuration * width;
+  const endX = selectedEnd / maxDuration * width;
+
+  ctx.strokeStyle = '#00ffff';
+  ctx.beginPath();
+  ctx.moveTo(startX, 0);
+  ctx.lineTo(startX, height);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#ff00ff';
+  ctx.beginPath();
+  ctx.moveTo(endX, 0);
+  ctx.lineTo(endX, height);
+  ctx.stroke();
+}
+
+function updateSelectionLabels() {
+  const startLabel = document.getElementById('start-label');
+  const endLabel = document.getElementById('end-label');
+  if (startLabel && endLabel) {
+    startLabel.textContent = selectedStart.toFixed(2);
+    endLabel.textContent = selectedEnd.toFixed(2);
+  }
+}
 }
