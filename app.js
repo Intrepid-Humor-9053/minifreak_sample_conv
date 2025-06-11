@@ -138,14 +138,28 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.addEventListener('mouseleave',() => isDragging = false);
 
   function updateSelection() {
+    if (!samplesForCanvas) return;
     const W = canvas.width;
     const x0 = Math.min(dragX0, dragX1);
     const x1 = Math.max(dragX0, dragX1);
+
     selectedStart = (x0 / W) * maxDuration;
     selectedEnd   = (x1 / W) * maxDuration;
+
+    // enforce min span
     if (selectedEnd - selectedStart < 0.05) {
       selectedEnd = selectedStart + 0.05;
     }
+
+    // enforce max span
+    const MAX_WINDOW = 3.0;
+    if (selectedEnd - selectedStart > MAX_WINDOW) {
+      selectedEnd = selectedStart + MAX_WINDOW;
+    }
+
+    // never exceed preview
+    selectedEnd = Math.min(selectedEnd, maxDuration);
+
     updateLabels();
     drawWaveform();
   }
