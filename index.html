@@ -52,12 +52,16 @@
       </div>
 
       <!-- Waveform Canvas -->
-      <canvas
+      <div>
+        <span>Start: <span id="start-label">0.00</span>s</span>
+        <span>End: <span id="end-label">3.00</span>s</span>
+        </div>
+        <canvas
         id="waveform-canvas"
         width="800"
         height="200"
-        style="border: 1px solid #ccc; margin-top: 1rem; touch-action: none"
-      ></canvas>
+        style="border: 1px solid #ccc; margin-top: 1rem; touch-action: none">
+        </canvas>
 
       <!-- Range sliders (optional if you want to show current selection) -->
       <div style="margin-top: 10px;">
