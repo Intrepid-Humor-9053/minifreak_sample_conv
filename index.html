@@ -22,6 +22,31 @@
           <input type="checkbox" id="normalize-checkbox" />
           Apply normalize
         </label>
+
+        <label style="display: flex; align-items: center; gap: 6px">
+          <span style="color: var(--red); font-size: 0.98em">limit to </span>
+          <input
+            type="number"
+            id="duration-seconds"
+            min="3"
+            max="600"
+            value="3"
+            style="
+              width: 48px;
+              border: 2px solid var(--red);
+              border-radius: 6px;
+              background: var(--bg2);
+              color: var(--red);
+              font-weight: bold;
+              margin-left: 8px;
+              text-align: center;
+            "
+          />
+          <span style="color: var(--red); font-size: 0.98em">seconds*</span>
+        </label>
+        <div style="color: var(--red); font-size: 0.93em; margin-top: 2px">
+          *Values other than 3 may not work on hardware!
+        </div>
       </div>
       <a id="download-link" style="display: none">Download File</a>
       <div id="error-dialog" class="error-dialog" style="display: none"></div>

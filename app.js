@@ -28,23 +28,26 @@ document.getElementById('fileElem').addEventListener('change', (event) => {
 function handleFiles(files) {
     const fade = document.getElementById('fade-checkbox').checked;
     const normalize = document.getElementById('normalize-checkbox').checked;
+    const durationInput = document.getElementById('duration-seconds');
+    let duration = parseFloat(durationInput.value);
+    if (isNaN(duration) || duration <= 0) duration = 3;
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        processFileAndDownload(file, fade, normalize);
+        processFileAndDownload(file, fade, normalize, duration);
     }
 }
 
-async function processFileAndDownload(file, fade, normalize ) {
+async function processFileAndDownload(file, fade, normalize, durationSec) {
   try {
     /* ---------- 1. Read & decode ---------- */
     const arrayBuffer = await file.arrayBuffer();
     const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
     const decoded = await decodeCtx.decodeAudioData(arrayBuffer);
 
-    /* ---------- 2. Resample to 48 kHz mono & truncate to 3 s ---------- */
+    /* ---------- 2. Resample to 48 kHz mono & truncate to N s ---------- */
     const SAMPLE_RATE = 48_000;
-    const DURATION_SEC = 3;
-    const FRAME_COUNT = SAMPLE_RATE * DURATION_SEC;
+    const DURATION_SEC = durationSec;
+    const FRAME_COUNT = Math.floor(SAMPLE_RATE * DURATION_SEC);
 
     const offline = new OfflineAudioContext({
       numberOfChannels: 1,
