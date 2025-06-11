@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
       maxDuration      = durationSec;
       currentFileName  = file.name.replace(/\.[^/.]+$/, '');
 
+      // Reset selection to [0 … min(maxDuration, 3)]
+      selectedStart = 0;
+      selectedEnd   = Math.min(maxDuration, 3.0);
+
       drawWaveform();
       updateLabels();
       dlBtn.disabled = false;
@@ -139,25 +143,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateSelection() {
     if (!samplesForCanvas) return;
-    const W = canvas.width;
+    const W  = canvas.width;
     const x0 = Math.min(dragX0, dragX1);
     const x1 = Math.max(dragX0, dragX1);
 
     selectedStart = (x0 / W) * maxDuration;
     selectedEnd   = (x1 / W) * maxDuration;
 
-    // enforce min span
+    // enforce minimum span
     if (selectedEnd - selectedStart < 0.05) {
       selectedEnd = selectedStart + 0.05;
     }
 
-    // enforce max span
+    // enforce maximum span of 3 s
     const MAX_WINDOW = 3.0;
     if (selectedEnd - selectedStart > MAX_WINDOW) {
       selectedEnd = selectedStart + MAX_WINDOW;
     }
 
-    // never exceed preview
+    // never exceed preview length
     selectedEnd = Math.min(selectedEnd, maxDuration);
 
     updateLabels();
@@ -180,12 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.stroke();
 
     // selection lines
-    const sx = (selectedStart/maxDuration)*W;
-    const ex = (selectedEnd  /maxDuration)*W;
-    ctx.strokeStyle = '#0ff';
-    ctx.beginPath(); ctx.moveTo(sx,0); ctx.lineTo(sx,H); ctx.stroke();
-    ctx.strokeStyle = '#f0f';
-    ctx.beginPath(); ctx.moveTo(ex,0); ctx.lineTo(ex,H); ctx.stroke();
+    const sx = (selectedStart / maxDuration) * W;
+    const ex = (selectedEnd   / maxDuration) * W;
+    ctx.strokeStyle = '#0ff'; ctx.beginPath(); ctx.moveTo(sx,0); ctx.lineTo(sx,H); ctx.stroke();
+    ctx.strokeStyle = '#f0f'; ctx.beginPath(); ctx.moveTo(ex,0); ctx.lineTo(ex,H); ctx.stroke();
   }
 
   function updateLabels() {
