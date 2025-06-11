@@ -134,7 +134,8 @@ function showErrorDialog(message) {
     dialog.classList.remove('visible');
     setTimeout(() => { dialog.style.display = 'none'; }, 200);
   }, 5000);
-    function drawWaveform(samples) {
+}
+function drawWaveform(samples) {
   const canvas = document.getElementById('waveform-canvas');
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
@@ -180,5 +181,4 @@ function updateSelectionLabels() {
     startLabel.textContent = selectedStart.toFixed(2);
     endLabel.textContent = selectedEnd.toFixed(2);
   }
-}
 }
