@@ -1,60 +1,55 @@
+// app.js
+
+// Global state
 const dropArea = document.getElementById('drop-area');
-let selectedStart = 0; // seconds
-let selectedEnd = 3;   // seconds
-let maxDuration = 3.0;
-let samplesForCanvas = [];
-let sampleRate = 48000;
+let selectedStart     = 0;   // in seconds
+let selectedEnd       = 3.0; // in seconds
+const maxDuration     = 3.0; // maximum selectable duration
+let samplesForCanvas  = [];  // full waveform samples
+let sampleRate        = 48000;
 
-
-dropArea.addEventListener('dragover', (event) => {
-    event.preventDefault();
-    dropArea.classList.add('active');
+// Drag & drop handlers
+dropArea.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropArea.classList.add('active');
 });
-
 dropArea.addEventListener('dragleave', () => {
-    dropArea.classList.remove('active');
+  dropArea.classList.remove('active');
 });
-
-dropArea.addEventListener('drop', (event) => {
-    event.preventDefault();
-    dropArea.classList.remove('active');
-    const files = event.dataTransfer.files;
-    handleFiles(files);
+dropArea.addEventListener('drop', e => {
+  e.preventDefault();
+  dropArea.classList.remove('active');
+  handleFiles(e.dataTransfer.files);
 });
-
 dropArea.addEventListener('click', () => {
-    document.getElementById('fileElem').click();
+  document.getElementById('fileElem').click();
 });
+document.getElementById('fileElem')
+  .addEventListener('change', e => handleFiles(e.target.files));
 
-// Handle file selection from picker
-document.getElementById('fileElem').addEventListener('change', (event) => {
-    handleFiles(event.target.files);
-});
-
+// Entry point for files
 function handleFiles(files) {
-    const fade = document.getElementById('fade-checkbox').checked;
-    const normalize = document.getElementById('normalize-checkbox').checked;
-    const durationInput = document.getElementById('duration-seconds');
-    let duration = parseFloat(durationInput.value);
-    if (isNaN(duration) || duration <= 0) duration = 3;
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        processFileAndDownload(file, fade, normalize, duration);
-    }
+  const fade      = document.getElementById('fade-checkbox').checked;
+  const normalize = document.getElementById('normalize-checkbox').checked;
+  let duration    = parseFloat(document.getElementById('duration-seconds').value);
+  if (isNaN(duration) || duration <= 0) duration = maxDuration;
+
+  for (let file of files) {
+    processFileAndDownload(file, fade, normalize, duration);
+  }
 }
 
+// Main processing + download
 async function processFileAndDownload(file, fade, normalize, durationSec) {
   try {
-    /* ---------- 1. Read & decode ---------- */
+    // 1. Read & decode
     const arrayBuffer = await file.arrayBuffer();
-    const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const decoded = await decodeCtx.decodeAudioData(arrayBuffer);
+    const decodeCtx   = new (window.AudioContext || window.webkitAudioContext)();
+    const decoded     = await decodeCtx.decodeAudioData(arrayBuffer);
 
-    /* ---------- 2. Resample to 48 kHz mono & truncate to N s ---------- */
-    const SAMPLE_RATE = 48_000;
-    const DURATION_SEC = durationSec;
-    const FRAME_COUNT = Math.floor(SAMPLE_RATE * DURATION_SEC);
-
+    // 2. Resample to 48kHz mono, truncate to durationSec
+    const SAMPLE_RATE = 48000;
+    const FRAME_COUNT = Math.floor(SAMPLE_RATE * durationSec);
     const offline = new OfflineAudioContext({
       numberOfChannels: 1,
       length: FRAME_COUNT,
@@ -65,101 +60,108 @@ async function processFileAndDownload(file, fade, normalize, durationSec) {
     src.connect(offline.destination);
     src.start(0);
     const rendered = await offline.startRendering();
-    let samples = rendered.getChannelData(0);
-      // Store for visualization
-    samplesForCanvas = samples.slice();
-    sampleRate = SAMPLE_RATE;
+
+    // 3. Prepare full waveform for preview
+    const fullSamples = rendered.getChannelData(0);
+    samplesForCanvas  = fullSamples.slice();
+    sampleRate        = SAMPLE_RATE;
     drawWaveform(samplesForCanvas);
     updateSelectionLabels();
 
+    // 4. Crop according to selection
+    const startSample = Math.floor(selectedStart * SAMPLE_RATE);
+    const endSample   = Math.floor(selectedEnd   * SAMPLE_RATE);
+    let samples       = fullSamples.slice(startSample, endSample);
 
-    /* ---------- 3. Optional fade-in/out ---------- */
+    // 5. Optional fade-in/out
     if (fade) {
-      const FADE_SAMPLES = Math.floor(SAMPLE_RATE * 0.020); // 20 ms
-      for (let i = 0; i < FADE_SAMPLES; ++i) {
-        samples[i] *= i / FADE_SAMPLES;                                     // fade-in
-        samples[samples.length - 1 - i] *= i / FADE_SAMPLES;               // fade-out
+      const FADE_SAMPLES = Math.floor(SAMPLE_RATE * 0.020);
+      for (let i = 0; i < FADE_SAMPLES; i++) {
+        samples[i]                         *= i / FADE_SAMPLES;
+        samples[samples.length - 1 - i]   *= i / FADE_SAMPLES;
       }
     }
 
-    /* ---------- 4. Optional peak-normalisation ---------- */
+    // 6. Optional peak-normalization
     if (normalize) {
       let maxAbs = 0;
-      for (const s of samples) maxAbs = Math.max(maxAbs, Math.abs(s));
+      for (let s of samples) maxAbs = Math.max(maxAbs, Math.abs(s));
       if (maxAbs > 0) {
         const scale = 1 / maxAbs;
-        for (let i = 0; i < samples.length; ++i) samples[i] *= scale;
+        for (let i = 0; i < samples.length; i++) samples[i] *= scale;
       } else {
-        samples = new Float32Array(samples.length); // keep silence as zeros
+        samples = new Float32Array(samples.length);
       }
     }
 
-    /* ---------- 5. Convert to signed 8-bit PCM ---------- */
+    // 7. Convert to signed 8-bit PCM
     const int8 = new Int8Array(samples.length);
-    for (let i = 0; i < samples.length; ++i) {
+    for (let i = 0; i < samples.length; i++) {
       let v = Math.round(samples[i] * 127);
-      v = Math.max(-128, Math.min(127, v)); // clamp
-      int8[i] = v;
+      int8[i] = Math.max(-128, Math.min(127, v));
     }
 
-    /* ---------- 6. Trigger download ---------- */
+    // 8. Trigger download
     const blob = new Blob([int8], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(blob);
-
-    const base = file.name.replace(/\.[^/.]+$/, ''); // strip extension
-    const a = document.createElement('a');
-    a.href = url;
+    const url  = URL.createObjectURL(blob);
+    const base = file.name.replace(/\.[^/.]+$/, '');
+    const a    = document.createElement('a');
+    a.href     = url;
     a.download = `${base}.raw12b`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
   } catch (err) {
-    showErrorDialog(err?.message || "Unknown error");
+    showErrorDialog(err.message || "Unknown error");
   }
 }
 
+// Error dialog
 function showErrorDialog(message) {
   const dialog = document.getElementById('error-dialog');
   if (
     message === "The buffer passed to decodeAudioData contains an unknown content type." ||
-    message === "Decoding audio data failed." // for some browsers
+    message === "Decoding audio data failed."
   ) {
     message = "Invalid file type";
   }
-  dialog.textContent = message;
+  dialog.textContent    = message;
   dialog.classList.add('visible');
-  dialog.style.display = 'flex';
+  dialog.style.display  = 'flex';
   setTimeout(() => {
     dialog.classList.remove('visible');
     setTimeout(() => { dialog.style.display = 'none'; }, 200);
   }, 5000);
 }
+
+// Draw waveform and selection lines
 function drawWaveform(samples) {
   const canvas = document.getElementById('waveform-canvas');
-  const ctx = canvas.getContext('2d');
-  const width = canvas.width;
+  const ctx    = canvas.getContext('2d');
+  const width  = canvas.width;
   const height = canvas.height;
 
+  // Background
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, width, height);
 
+  // Waveform
   ctx.strokeStyle = '#ff9933';
   ctx.beginPath();
-
   const step = Math.floor(samples.length / width);
   for (let i = 0; i < width; i++) {
-    const min = samples[i * step] || 0;
-    const y = (1 - min) * height / 2;
-    if (i === 0) ctx.moveTo(i, y);
-    else ctx.lineTo(i, y);
+    const s = samples[i * step] || 0;
+    const y = (1 - s) * height / 2;
+    i === 0 ? ctx.moveTo(i, y) : ctx.lineTo(i, y);
   }
   ctx.stroke();
 
-  // Draw selection lines
-  const startX = selectedStart / maxDuration * width;
-  const endX = selectedEnd / maxDuration * width;
+  // Selection lines
+  const startX = (selectedStart / maxDuration) * width;
+  const endX   = (selectedEnd   / maxDuration) * width;
 
   ctx.strokeStyle = '#00ffff';
   ctx.beginPath();
@@ -174,11 +176,46 @@ function drawWaveform(samples) {
   ctx.stroke();
 }
 
+// Update start/end labels
 function updateSelectionLabels() {
-  const startLabel = document.getElementById('start-label');
-  const endLabel = document.getElementById('end-label');
-  if (startLabel && endLabel) {
-    startLabel.textContent = selectedStart.toFixed(2);
-    endLabel.textContent = selectedEnd.toFixed(2);
+  const sLbl = document.getElementById('start-label');
+  const eLbl = document.getElementById('end-label');
+  if (sLbl && eLbl) {
+    sLbl.textContent = selectedStart.toFixed(2);
+    eLbl.textContent = selectedEnd.toFixed(2);
   }
+}
+
+// Canvas drag-to-select interaction
+const canvas = document.getElementById('waveform-canvas');
+let isDragging = false, dragStartX = 0, dragEndX = 0;
+
+canvas.addEventListener('mousedown', e => {
+  isDragging  = true;
+  const rect  = canvas.getBoundingClientRect();
+  dragStartX  = e.clientX - rect.left;
+  dragEndX    = dragStartX;
+  updateSelectionFromCanvas();
+});
+canvas.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const rect  = canvas.getBoundingClientRect();
+  dragEndX    = e.clientX - rect.left;
+  updateSelectionFromCanvas();
+});
+canvas.addEventListener('mouseup', () => {
+  isDragging = false;
+});
+
+function updateSelectionFromCanvas() {
+  const width = canvas.width;
+  let startX  = Math.min(dragStartX, dragEndX);
+  let endX    = Math.max(dragStartX, dragEndX);
+
+  selectedStart = Math.max(0, Math.min((startX / width) * maxDuration, maxDuration));
+  selectedEnd   = Math.max(0, Math.min((endX   / width) * maxDuration, maxDuration));
+  if (selectedEnd - selectedStart < 0.05) selectedEnd = selectedStart + 0.05;
+
+  updateSelectionLabels();
+  drawWaveform(samplesForCanvas);
 }
