@@ -1,114 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MiniFreak Sample Converter</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>MiniFreak Sample Converter</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiniFreak Sample Converter</title>
+  <style>
+    /* quick inline styles so you don’t need style.css */
+    body { font-family: sans-serif; padding: 1rem; }
+    #drop-area {
+      border: 2px dashed #666; padding: 2rem; text-align: center;
+      margin-bottom: 1rem; cursor: pointer;
+    }
+    #waveform-canvas { border: 1px solid #ccc; cursor: crosshair; }
+    #controls { margin-top: 1rem; }
+    #error-dialog { 
+      position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+      background: rgba(200,50,50,0.9); color: white; padding: 0.5rem 1rem;
+      display: none; border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>MiniFreak Sample Converter</h1>
 
-      <!-- Drop area + hidden file input -->
-      <div id="drop-area">
-        <p>Drag & drop audio here or click to browse</p>
-        <input type="file" id="fileElem" accept="audio/*" hidden />
-      </div>
+  <!-- DROP AREA -->
+  <div id="drop-area">
+    <p>Drag & drop audio here or click to browse</p>
+    <input type="file" id="fileElem" accept="audio/*" hidden>
+  </div>
 
-      <!-- Options -->
-      <div class="options">
-        <label>
-          <input type="checkbox" id="fade-checkbox" />
-          Apply fade
-        </label>
-        <label>
-          <input type="checkbox" id="normalize-checkbox" />
-          Apply normalize
-        </label>
-        <label style="display: flex; align-items: center; gap: 6px">
-          <span style="color: var(--red); font-size: 0.98em">limit to</span>
-          <input
-            type="number"
-            id="duration-seconds"
-            min="0.1"
-            max="600"
-            step="0.1"
-            value="3"
-            style="
-              width: 48px;
-              border: 2px solid var(--red);
-              border-radius: 6px;
-              background: var(--bg2);
-              color: var(--red);
-              font-weight: bold;
-              margin-left: 8px;
-              text-align: center;
-            "
-          />
-          <span style="color: var(--red); font-size: 0.98em">seconds*</span>
-        </label>
-        <div style="color: var(--red); font-size: 0.93em; margin-top: 2px">
-          *Values other than 3 may not work on hardware!
-        </div>
-      </div>
+  <!-- OPTIONS -->
+  <div id="options">
+    <label><input type="checkbox" id="fade-checkbox"> Apply fade</label>
+    <label><input type="checkbox" id="normalize-checkbox"> Apply normalize</label>
+    <label style="margin-left:1rem">
+      Limit preview to
+      <input type="number" id="duration-seconds" value="3" step="0.1" min="0.1" style="width:4ch">
+      s
+    </label>
+  </div>
 
-      <!-- Waveform preview + selection labels -->
-      <div style="margin-top: 1rem;">
-        <div style="margin-bottom: 5px;">
-          Start: <span id="start-label">0.00</span>s |
-          End: <span id="end-label">3.00</span>s
-        </div>
-        <canvas
-          id="waveform-canvas"
-          width="800"
-          height="200"
-          style="border: 1px solid #ccc; touch-action: none; cursor: crosshair;"
-        ></canvas>
-      </div>
-
-      <!-- Download button -->
-      <div id="controls" style="margin-top: 1rem;">
-        <button id="download-selection-btn" disabled>
-          Download Selection
-        </button>
-      </div>
-
-      <!-- Error dialog -->
-      <div id="error-dialog" class="error-dialog" style="display: none;"></div>
-
-      <!-- README Preview -->
-      <div style="display: flex; justify-content: center; width: 100%; margin-top: 2rem;">
-        <div id="readme-markdown" class="readme-markdown"></div>
-      </div>
-
-      <!-- Footer / Counter -->
-      <footer style="text-align: center; margin-top: 2rem; color: var(--fg2);">
-        <div>(I just want to see how many people this helped)</div>
-        <a href="https://www.free-counters.org/">powered by Free-Counters</a>
-        <script
-          src="https://www.freevisitorcounters.com/auth.php?id=581f12878932542e8293f716501a29d12b31e728"
-          async
-        ></script>
-        <script
-          src="https://www.freevisitorcounters.com/en/home/counter/1350426/t/2"
-          async
-        ></script>
-      </footer>
+  <!-- WAVEFORM + LABELS -->
+  <div style="margin-top:1rem">
+    <div>
+      Start: <span id="start-label">0.00</span>s |
+      End:   <span id="end-label">3.00</span>s
     </div>
+    <canvas id="waveform-canvas" width="800" height="200"></canvas>
+  </div>
 
-    <!-- JS Scripts -->
-    <script src="app.js" defer></script>
-    <script src="waveform-preview.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        fetch("README.md")
-          .then(res => res.text())
-          .then(md => {
-            document.getElementById("readme-markdown").innerHTML = marked.parse(md);
-          });
-      });
-    </script>
-  </body>
+  <!-- DOWNLOAD BUTTON -->
+  <div id="controls">
+    <button id="download-selection-btn" disabled>Download Selection</button>
+  </div>
+
+  <!-- ERROR DIALOG -->
+  <div id="error-dialog"></div>
+
+  <!-- APP SCRIPT -->
+  <script src="app.js" defer></script>
+</body>
 </html>
